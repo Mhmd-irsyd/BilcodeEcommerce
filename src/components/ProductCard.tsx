@@ -1,5 +1,8 @@
+"use client"
+
 import Link from "next/link"
 import Image from "next/image"
+import { useState, useEffect } from "react"
 import { Product } from "@/types"
 
 interface ProductCardProps {
@@ -7,8 +10,15 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product }: ProductCardProps) {
+  const [isClicked, setIsClicked] = useState(false)
+
+  // Reset tombol jika user memencet tombol "Back" kembali ke halaman ini
+  useEffect(() => {
+    setIsClicked(false)
+  }, [])
+
   return (
-    <div className="border rounded-lg overflow-hidden flex flex-col pt-4 bg-white shadow-sm hover:shadow-md transition-shadow">
+    <div className="border rounded-lg overflow-hidden flex flex-col pt-4 bg-white shadow-sm hover:shadow-md transition-shadow relative">
       <div className="relative h-48 w-full">
         {/* Usign standard img tag for simplicity with external urls or use placeholder if missing */}
         <img
@@ -27,9 +37,15 @@ export function ProductCard({ product }: ProductCardProps) {
         <div className="mt-auto">
           <Link
             href={`/products/${product.id}`}
-            className="block text-center w-full bg-gray-100 hover:bg-gray-200 active:bg-gray-300 active:scale-[0.98] text-gray-800 font-medium py-2 rounded transition-all duration-200"
+            prefetch={true}
+            onClick={() => setIsClicked(true)}
+            className={`block text-center w-full font-medium py-2 rounded transition-all duration-200 ${
+              isClicked 
+                ? "bg-blue-600 text-white cursor-wait opacity-90" 
+                : "bg-gray-100 hover:bg-gray-200 active:bg-gray-300 active:scale-[0.98] text-gray-800"
+            }`}
           >
-            Lihat Detail
+            {isClicked ? "Memuat..." : "Lihat Detail"}
           </Link>
         </div>
       </div>
