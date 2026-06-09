@@ -27,7 +27,7 @@ export function ProductCard({ product }: ProductCardProps) {
         <div className="mt-auto">
           <Link
             href={`/products/${product.id}`}
-            className="block text-center w-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium py-2 rounded transition-colors"
+            className="block text-center w-full bg-gray-100 hover:bg-gray-200 active:bg-gray-300 active:scale-[0.98] text-gray-800 font-medium py-2 rounded transition-all duration-200"
           >
             Lihat Detail
           </Link>
