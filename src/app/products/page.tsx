@@ -1,5 +1,6 @@
 import { supabase } from "@/lib/supabase"
 import { ProductCard } from "@/components/ProductCard"
+import SearchInput from "@/components/SearchInput"
 import { Product } from "@/types"
 
 export const revalidate = 0 // Opt out of caching for now to show latest products
@@ -29,23 +30,9 @@ export default async function ProductsPage({
       <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
         <h1 className="text-3xl font-bold text-gray-900">Daftar Produk</h1>
         
-        <form className="w-full md:w-auto" method="GET" action="/products">
-          <div className="flex shadow-sm rounded-md">
-            <input
-              type="text"
-              name="search"
-              defaultValue={search}
-              placeholder="Cari produk..."
-              className="px-4 py-2 border border-gray-300 text-gray-900 bg-white rounded-l-md w-full md:w-64 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <button
-              type="submit"
-              className="bg-blue-600 text-white px-5 py-2 rounded-r-md hover:bg-blue-700 font-medium transition-colors border border-transparent"
-            >
-              Cari
-            </button>
-          </div>
-        </form>
+        <div className="w-full md:w-auto">
+          <SearchInput initialSearch={search} />
+        </div>
       </div>
 
       {!products || products.length === 0 ? (
