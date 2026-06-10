@@ -8,13 +8,14 @@ import { useRouter } from "next/navigation"
 
 type CartItem = {
   id: string
+  user_id: string
   quantity: number
-
   product_id: string
   name: string
   price: number
   image_url: string | null
   stock: number
+  created_at: string
 }
 
 export default function CartPage() {
@@ -24,26 +25,26 @@ export default function CartPage() {
   const router = useRouter()
 
   const calculateTotal = (items: CartItem[]) => {
-    return items.reduce((acc, item) => {
-      return acc + item.price * item.quantity
-    }, 0)
+    return items.reduce((acc, item) => acc + item.price * item.quantity, 0)
   }
 
   const fetchCartItems = async () => {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
+    const { data: { user } } = await supabase.auth.getUser()
 
     if (!user) {
       setLoading(false)
       return
     }
 
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("cart_view")
       .select("*")
       .eq("user_id", user.id)
       .order("created_at", { ascending: true })
+
+    if (error) {
+      console.error("Error fetching cart:", error)
+    }
 
     if (data) {
       setCartItems(data as CartItem[])
@@ -74,7 +75,6 @@ export default function CartPage() {
       const updated = prev.map((item) =>
         item.id === cartId ? { ...item, quantity: newQuantity } : item
       )
-
       setTotal(calculateTotal(updated))
       return updated
     })
@@ -87,10 +87,8 @@ export default function CartPage() {
 
   const handleRemove = async (cartId: string) => {
     const updated = cartItems.filter((item) => item.id !== cartId)
-
     setCartItems(updated)
     setTotal(calculateTotal(updated))
-
     await supabase.from("cart").delete().eq("id", cartId)
   }
 
@@ -126,10 +124,7 @@ export default function CartPage() {
                   className="flex flex-col sm:flex-row gap-4 p-4 bg-white rounded-xl shadow-sm border items-center"
                 >
                   <img
-                    src={
-                      item.image_url ||
-                      "https://placehold.co/100x100?text=Image"
-                    }
+                    src={item.image_url || "https://placehold.co/100x100?text=Image"}
                     className="w-24 h-24 object-contain rounded bg-gray-50 border p-1"
                     alt={item.name}
                   />
@@ -138,7 +133,6 @@ export default function CartPage() {
                     <h3 className="font-semibold text-gray-800 text-lg line-clamp-1">
                       {item.name}
                     </h3>
-
                     <p className="text-blue-600 font-bold mb-3">
                       Rp {item.price.toLocaleString("id-ID")}
                     </p>
@@ -146,32 +140,16 @@ export default function CartPage() {
                     <div className="flex items-center justify-center sm:justify-start gap-3">
                       <div className="flex items-center border rounded">
                         <button
-                          onClick={() =>
-                            handleUpdateQuantity(
-                              item.id,
-                              item.quantity,
-                              "decrease",
-                              item.stock
-                            )
-                          }
+                          onClick={() => handleUpdateQuantity(item.id, item.quantity, "decrease", item.stock)}
                           className="px-3 py-1 bg-gray-50 hover:bg-gray-200 text-gray-600 border-r"
                         >
                           -
                         </button>
-
                         <span className="w-10 text-center text-sm font-medium">
                           {item.quantity}
                         </span>
-
                         <button
-                          onClick={() =>
-                            handleUpdateQuantity(
-                              item.id,
-                              item.quantity,
-                              "increase",
-                              item.stock
-                            )
-                          }
+                          onClick={() => handleUpdateQuantity(item.id, item.quantity, "increase", item.stock)}
                           className="px-3 py-1 bg-gray-50 hover:bg-gray-200 text-gray-600 border-l"
                         >
                           +
@@ -201,14 +179,12 @@ export default function CartPage() {
               <h2 className="text-xl font-bold border-b pb-4 mb-6">
                 Ringkasan Belanja
               </h2>
-
               <div className="flex justify-between font-bold text-lg mb-8 text-gray-800">
                 <span>Total:</span>
                 <span className="text-blue-600">
                   Rp {total.toLocaleString("id-ID")}
                 </span>
               </div>
-
               <button
                 onClick={() => router.push("/checkout")}
                 className="w-full bg-green-600 hover:bg-green-700 text-white py-3.5 rounded-lg font-bold text-lg transition-colors shadow-sm"
