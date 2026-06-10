@@ -32,4 +32,4 @@ cp .env.example .env.local
 npm run dev
 
 ## Live Demo
-https://bilcode-ecommerce.vercel.app
+https://bilcode-ecommerce.vercel.app/products
