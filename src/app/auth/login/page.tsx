@@ -17,10 +17,7 @@ export default function LoginPage() {
     setLoading(true)
     setError(null)
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    })
+    const { error } = await supabase.auth.signInWithPassword({ email, password })
 
     if (error) {
       setError(error.message)
@@ -31,52 +28,57 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-[400px] flex items-center justify-center">
-      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-        <h1 className="text-2xl font-bold mb-6 text-center text-gray-900">Login</h1>
-        
+    <div className="min-h-[70vh] flex items-center justify-center px-4">
+      <div className="bg-white p-6 sm:p-8 rounded-2xl shadow-sm border border-gray-200 w-full max-w-sm sm:max-w-md">
+        <div className="text-center mb-6">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Selamat Datang</h1>
+          <p className="text-gray-500 text-sm mt-1">Masuk ke akun Anda</p>
+        </div>
+
         {error && (
-          <div className="bg-red-50 text-red-500 p-3 rounded mb-4 text-sm">
+          <div className="bg-red-50 text-red-600 p-3 rounded-lg mb-4 text-sm border border-red-100">
             {error}
           </div>
         )}
 
         <form onSubmit={handleLogin} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">Email</label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full border border-gray-300 text-gray-900 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+              placeholder="email@contoh.com"
+              className="w-full border border-gray-300 text-gray-900 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-sm"
             />
           </div>
-          
+
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">Password</label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full border border-gray-300 text-gray-900 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+              placeholder="••••••••"
+              className="w-full border border-gray-300 text-gray-900 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-sm"
             />
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 text-white py-2 rounded font-medium hover:bg-blue-700 disabled:opacity-50"
+            className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50 transition-colors text-sm mt-2"
           >
-            {loading ? "Loading..." : "Login"}
+            {loading ? "Memproses..." : "Login"}
           </button>
         </form>
 
-        <p className="mt-4 text-center text-sm text-gray-600">
-          Don't have an account?{" "}
-          <Link href="/auth/register" className="text-blue-600 hover:underline">
-            Register
+        <p className="mt-5 text-center text-sm text-gray-600">
+          Belum punya akun?{" "}
+          <Link href="/auth/register" className="text-blue-600 hover:underline font-medium">
+            Daftar sekarang
           </Link>
         </p>
       </div>
