@@ -18,8 +18,8 @@ Aplikasi e-commerce sederhana yang dibangun untuk Coding Test Bilcode Technology
 ## Cara Menjalankan
 
 ### 1. Clone repo
-git clone https://github.com/username/bilcode-ecommerce.git
-cd bilcode-ecommerce
+git clone https://github.com/Mhmd-irsyd/BilcodeEcommerce.git
+cd BilcodeEcommerce
 
 ### 2. Install dependencies
 npm install
