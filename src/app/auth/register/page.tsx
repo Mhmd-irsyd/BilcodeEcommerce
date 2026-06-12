@@ -11,10 +11,22 @@ export default function RegisterPage() {
   const [password, setPassword] = useState("")
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const [cooldown, setCooldown] = useState(0)
   const router = useRouter()
+
+  const startCooldown = (seconds: number) => {
+    setCooldown(seconds)
+    const interval = setInterval(() => {
+      setCooldown(prev => {
+        if (prev <= 1) { clearInterval(interval); return 0 }
+        return prev - 1
+      })
+    }, 1000)
+  }
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (cooldown > 0) return
     setLoading(true)
     setError(null)
 
@@ -25,7 +37,16 @@ export default function RegisterPage() {
     })
 
     if (signUpError) {
-      setError(signUpError.message)
+      if (signUpError.status === 429) {
+        setError("Terlalu banyak percobaan. Silakan tunggu sebentar sebelum mencoba lagi.")
+        startCooldown(60)
+      } else if (signUpError.message.toLowerCase().includes("already registered")) {
+        setError("Email ini sudah terdaftar. Silakan login atau gunakan email lain.")
+      } else if (signUpError.message.toLowerCase().includes("password")) {
+        setError("Password minimal 6 karakter.")
+      } else {
+        setError("Terjadi kesalahan. Silakan coba lagi.")
+      }
       setLoading(false)
     } else {
       router.push("/auth/login")
@@ -85,10 +106,10 @@ export default function RegisterPage() {
 
           <button
             type="submit"
-            disabled={loading}
-            className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50 transition-colors text-sm mt-2"
+            disabled={loading || cooldown > 0}
+            className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm mt-2"
           >
-            {loading ? "Memproses..." : "Daftar"}
+            {loading ? "Memproses..." : cooldown > 0 ? `Tunggu ${cooldown} detik...` : "Daftar"}
           </button>
         </form>
 
